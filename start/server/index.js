@@ -18,6 +18,7 @@ const typeDefs = gql`
       slug: String!
       stock: Int!
       onSale: Boolean  
+      category: Category
   }
 
 type Category {
@@ -25,6 +26,7 @@ type Category {
     image: String!
     category: String!
     slug: String!
+    animals: [Animal!]!
 }
 
   type Query {
@@ -53,11 +55,26 @@ const resolvers = {
             })
         }
 
+    },
+    Category: {
+        animals: (parent, args, ctx) => {
+            return animals.filter((animal) => {
+                return animal.category === parent.id
+            })
+        }
+    },
+    Animal: {
+        category: (parent, args, ctx) => {
+
+            return categories.find((category) => {
+                return category.id === parent.category
+            })
+        }
     }
 }
 
-    const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ typeDefs, resolvers });
 
-    server.listen().then(({ url }) => {
-        console.log(`🚀  Server ready at ${url}`);
-    });
+server.listen().then(({ url }) => {
+    console.log(`🚀  Server ready at ${url}`);
+});
